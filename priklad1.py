@@ -1,29 +1,18 @@
-from neopixel import NeoPixel
-from machine import Pin
-from time import sleep
+button = Pin(0, Pin.IN)
 
-np = NeoPixel(Pin(40),12)
+colors = [[100,0,0],[75,25,0],[50,50,0],[25,75,0],
+          [0,100,0],[0,75,25],[0,50,50],[0,25,75],
+          [0,0,100],[25,0,75],[50,0,50],[75,0,25]]
 
-np.fill((0,0,0))
-np.write()
-
-red = Pin(33, Pin.OUT)
-green = Pin(18, Pin.OUT)
-blue = Pin(16, Pin.OUT)
-
-def rgb(r, g, b):
-    red.value(r)
-    green.value(g)
-    blue.value(b)
-
-def blik(delay):
-    while True:
-        red.value(1)
-        sleep(delay)
-        red.value(0)
-        green.value(1)
-        sleep(delay)
-        green.value(0)
-        blue.value(1)
-        sleep(delay)
-        blue.value(0)
+count = 0
+def neo(a):
+    color = [100,0,0]
+    global count
+    count = (count + 1) % 12
+    for i in range(12):
+        np[(i + count) % 12] = (colors[i][0], colors[i][1], colors[i][2])
+    np.write()
+    
+    sleep(0.001)
+    
+button.irq(trigger=Pin.IRQ_FALLING, handler=neo)  
